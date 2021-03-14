@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash'
+import { isEmpty, size } from 'lodash'
 import React,{useState} from 'react'
 import shortid from 'shortid'
 
@@ -19,6 +19,11 @@ const newTaks={
 setTakss([...takss,newTaks])
 setTaks("")
   }
+  const deletetaks=(id)=>{
+    const filteredtaks=takss.filter(taks=>taks.id !== id)
+    setTakss(filteredtaks)
+
+  }
   return (
     <div className="container mt-5">
       <h1>Tareas</h1>
@@ -26,19 +31,34 @@ setTaks("")
       <div className="row">
         <div className="col-8">
               <h4 className="text-center">Lista de Tareas</h4>
-              <ul className="list-group">
+{
+  size(takss)==0 ?(
+    <h5 className="text-center">Aun No hay tareas</h5>
+  ):(
+    <ul className="list-group">
                 {
                   takss.map((taks)=>(
                   <li className="list-group-item" key={taks.id}>
                     <span className="load">{taks.name}</span>
-                    <button className="btn btn-danger btn-sm float-right mx-2">Eliminar</button>
-                    <button className="btn btn-warning btn-sm float-right">Editar</button>
+                    <button 
+                    className="btn btn-danger btn-sm float-right mx-2"
+                    onClick={()=>deletetaks(taks.id)}>
+                      Eliminar
+                      </button>
+                    <button 
+                    className="btn btn-warning btn-sm float-right">
+                      Editar
+                      </button>
                   </li>
                   ))
                   
                 }
                
               </ul>
+
+  )
+              
+              }
         </div>
         <div className="col-4">
         <h4 className="text-center">Formulario</h4>
