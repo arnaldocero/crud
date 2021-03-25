@@ -5,10 +5,23 @@ import shortid from 'shortid'
 function App() {
   const [taks,setTaks]=useState("")
   const [takss,setTakss]=useState([])
+  const[editMode,setEditMode]=useState(false)
+  const [id, setId] = useState("")
+  const [error, seterror] = useState(null)
+
+  const valiForm=()=>{
+    let isValid=true
+    seterror(null)
+    if(isEmpty(taks)){
+      seterror("Ingrasar una tarea")
+      isValid=false
+    }
+    return isValid
+  }
   const addtaks=(e)=>{
 e.preventDefault()
-if(isEmpty(taks)){
-  console.log("task empty")
+if(!valiForm())
+{
   return
 }
 
@@ -19,10 +32,31 @@ const newTaks={
 setTakss([...takss,newTaks])
 setTaks("")
   }
+
+  const savetaks=(e)=>{
+    e.preventDefault()
+    if(!valiForm())
+{
+  return
+}
+    
+    
+    const editedtakss=takss.map(item => item.id === id ? {id, name: taks}: item)
+    
+    setTaks(editedtakss)
+    setEditMode(false)
+    setTaks("")
+    setId("")
+      }
   const deletetaks=(id)=>{
     const filteredtaks=takss.filter(taks=>taks.id !== id)
     setTakss(filteredtaks)
 
+  }
+  const editTaks=(ithetask)=>{
+    setTaks(ithetask.name)
+    setEditMode(true)
+    setId(ithetask.id)
   }
   return (
     <div className="container mt-5">
@@ -32,8 +66,8 @@ setTaks("")
         <div className="col-8">
               <h4 className="text-center">Lista de Tareas</h4>
 {
-  size(takss)==0 ?(
-    <h5 className="text-center">Aun No hay tareas</h5>
+  size(takss)===0 ?(
+    <li className="list-group-item">Aun No hay tareas</li>
   ):(
     <ul className="list-group">
                 {
@@ -46,7 +80,8 @@ setTaks("")
                       Eliminar
                       </button>
                     <button 
-                    className="btn btn-warning btn-sm float-right">
+                    className="btn btn-warning btn-sm float-right"
+                    onClick={()=>editTaks(taks)}>
                       Editar
                       </button>
                   </li>
@@ -61,8 +96,11 @@ setTaks("")
               }
         </div>
         <div className="col-4">
-        <h4 className="text-center">Formulario</h4>
-        <form onSubmit={addtaks}>
+        <h4 className="text-center">{editMode ?"Editar tarea":"Agregar tarea"}</h4>
+        <form onSubmit={editMode? savetaks: addtaks}>
+        {
+              error && <span className="text-danger mb 2">{error}</span>
+            }
           <input 
           type="text" 
           className="form-control mb-2"
@@ -70,7 +108,8 @@ setTaks("")
           onChange={(text)=>setTaks(text.target.value)}
           value={taks}
             />
-          <button className="btn btn-dark btn-block" type="submit">Agregar</button>
+           
+          <button className={editMode? "btn btn-warning btn-block":"btn btn-dark btn-block"} type="submit">{editMode? "Guardar": "Agregar"}</button>
         </form>
         </div>
       </div>
